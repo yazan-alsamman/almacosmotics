@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
@@ -6,18 +6,32 @@ import Footer from '@/components/Footer';
 import { useCatalogStore } from '@/store/catalogStore';
 import { useLanguage } from '@/i18n/LanguageContext';
 
+const CAT_KEYS = ['all', 'makeup', 'skincare', 'fragrance'] as const;
+type CatKey = (typeof CAT_KEYS)[number];
+
 const Products = () => {
   const { t } = useLanguage();
   const categories = [
-    { key: 'all', label: t('productsPage.catAll') },
-    { key: 'makeup', label: t('nav.makeup') },
-    { key: 'skincare', label: t('nav.skincare') },
-    { key: 'fragrance', label: t('nav.fragrance') },
+    { key: 'all' as const, label: t('productsPage.catAll') },
+    { key: 'makeup' as const, label: t('nav.makeup') },
+    { key: 'skincare' as const, label: t('nav.skincare') },
+    { key: 'fragrance' as const, label: t('nav.fragrance') },
   ];
   const catalog = useCatalogStore((s) => s.products);
-  const [searchParams] = useSearchParams();
-  const initialCat = searchParams.get('cat') || 'all';
-  const [activeCategory, setActiveCategory] = useState(initialCat);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const raw = searchParams.get('cat') || 'all';
+  const activeCategory: CatKey = CAT_KEYS.includes(raw as CatKey) ? (raw as CatKey) : 'all';
+
+  const setCategory = useCallback(
+    (key: CatKey) => {
+      if (key === 'all') {
+        setSearchParams({}, { replace: true });
+      } else {
+        setSearchParams({ cat: key }, { replace: true });
+      }
+    },
+    [setSearchParams]
+  );
 
   const filtered = useMemo(
     () => (activeCategory === 'all' ? catalog : catalog.filter((p) => p.category === activeCategory)),
@@ -41,7 +55,7 @@ const Products = () => {
             <button
               key={cat.key}
               type="button"
-              onClick={() => setActiveCategory(cat.key)}
+              onClick={() => setCategory(cat.key)}
               className={`px-5 py-2 rounded-full text-xs font-sans tracking-widest uppercase transition-all border ${
                 activeCategory === cat.key
                   ? 'bg-foreground text-background border-foreground'
