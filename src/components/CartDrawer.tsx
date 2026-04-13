@@ -5,6 +5,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useAuthStore } from '@/store/authStore';
 import { formatPrice } from '@/data/products';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 const FREE_SHIPPING_THRESHOLD = 200000;
 const GIFT_WRAP_FEE = 10000;
@@ -14,7 +15,9 @@ const CartDrawer = () => {
     useCartStore();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const navigate = useNavigate();
+  const { t, dir } = useLanguage();
   const sub = subtotal();
+  const offscreenX = dir === 'rtl' ? '-100%' : '100%';
   const shippingProgress = Math.min((sub / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const giftFee = giftWrapping ? GIFT_WRAP_FEE : 0;
   const freeUnlocked = sub >= FREE_SHIPPING_THRESHOLD;
@@ -43,18 +46,18 @@ const CartDrawer = () => {
           />
 
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: offscreenX }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
+            exit={{ x: offscreenX }}
             transition={{ type: 'spring', damping: 32, stiffness: 320 }}
-            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-background z-50 flex flex-col shadow-2xl border-l border-border/40"
+            className="fixed end-0 top-0 bottom-0 w-full max-w-md bg-background z-50 flex flex-col shadow-2xl border-s border-border/40"
           >
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
-                <h2 className="font-serif text-xl">Your Bag</h2>
-                <p className="text-[10px] font-sans tracking-[0.25em] uppercase text-muted-foreground mt-1">Alma · Luxury</p>
+                <h2 className="font-serif text-xl">{t('cart.title')}</h2>
+                <p className="text-[10px] font-sans tracking-[0.25em] uppercase text-muted-foreground mt-1">{t('cart.subtitle')}</p>
               </div>
-              <button type="button" onClick={closeCart} className="hover:opacity-70 transition-opacity" aria-label="Close bag">
+              <button type="button" onClick={closeCart} className="hover:opacity-70 transition-opacity" aria-label={t('nav.bag')}>
                 <X size={20} />
               </button>
             </div>
@@ -63,7 +66,7 @@ const CartDrawer = () => {
               <div className="px-6 pt-4 space-y-2">
                 <div className="flex items-center justify-between text-xs font-sans">
                   <span className="text-muted-foreground">
-                    {freeUnlocked ? 'Complimentary shipping unlocked' : `${formatPrice(remaining)} to free shipping`}
+                    {freeUnlocked ? t('cart.freeShip') : `${formatPrice(remaining)} ${t('cart.toFreeShip')}`}
                   </span>
                   {freeUnlocked && (
                     <motion.span
@@ -72,7 +75,7 @@ const CartDrawer = () => {
                       className="inline-flex items-center gap-1 text-[10px] tracking-wide uppercase text-foreground"
                     >
                       <Sparkles size={12} className="text-primary" />
-                      Sparkle
+                      {t('cart.sparkle')}
                     </motion.span>
                   )}
                 </div>
@@ -98,8 +101,8 @@ const CartDrawer = () => {
             <div className="flex-1 overflow-y-auto p-6">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full min-h-[40vh] text-center">
-                  <p className="font-serif text-lg text-muted-foreground">Your bag is empty</p>
-                  <p className="text-sm text-muted-foreground mt-1 font-sans">Discover our luxury collection</p>
+                  <p className="font-serif text-lg text-muted-foreground">{t('cart.empty')}</p>
+                  <p className="text-sm text-muted-foreground mt-1 font-sans">{t('cart.emptyHint')}</p>
                 </div>
               ) : (
                 <div className="space-y-5">
@@ -146,7 +149,7 @@ const CartDrawer = () => {
                             <button
                               type="button"
                               onClick={() => removeItem(item.product.id)}
-                              className="ml-auto hover:opacity-70 text-muted-foreground"
+                              className="ms-auto hover:opacity-70 text-muted-foreground"
                               aria-label="Remove"
                             >
                               <Trash2 size={14} />
@@ -172,8 +175,8 @@ const CartDrawer = () => {
                   <motion.div animate={{ rotateY: giftWrapping ? 180 : 0 }} transition={{ duration: 0.6 }}>
                     <Gift size={18} />
                   </motion.div>
-                  <div className="text-left flex-1">
-                    <span className="text-sm font-sans">Gift Wrapping</span>
+                  <div className="text-start flex-1">
+                    <span className="text-sm font-sans">{t('cart.giftWrap')}</span>
                     <span className="text-xs text-muted-foreground block">{formatPrice(GIFT_WRAP_FEE)}</span>
                   </div>
                   <div className={`w-10 h-5 rounded-full transition-colors ${giftWrapping ? 'bg-foreground' : 'bg-muted'}`}>
@@ -186,7 +189,7 @@ const CartDrawer = () => {
                 </button>
 
                 <div className="flex justify-between text-sm font-sans">
-                  <span>Subtotal</span>
+                  <span>{t('cart.subtotal')}</span>
                   <span>{formatPrice(sub + giftFee)}</span>
                 </div>
 
@@ -197,7 +200,7 @@ const CartDrawer = () => {
                   whileTap={{ scale: 0.99 }}
                   className="w-full py-3.5 bg-foreground text-background rounded-xl font-sans text-sm tracking-[0.2em] uppercase hover:opacity-90 transition-opacity shadow-lg"
                 >
-                  Checkout
+                  {t('cart.checkout')}
                 </motion.button>
               </div>
             )}

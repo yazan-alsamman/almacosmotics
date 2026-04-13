@@ -54,6 +54,11 @@
     @apply bg-background text-foreground font-sans antialiased;
   }
 
+  html[dir='rtl'] body,
+  html[dir='rtl'] .font-sans {
+    font-family: 'Cairo', 'Inter', system-ui, sans-serif;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
   }
@@ -106,6 +111,12 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
+}
+
+.admin-surface {
+  background:
+    radial-gradient(ellipse 90% 60% at 50% -15%, hsl(350 55% 92% / 0.65), transparent 55%),
+    linear-gradient(180deg, hsl(40 33% 97%) 0%, hsl(350 28% 94%) 100%);
 }
 
 @keyframes pulse-ring {

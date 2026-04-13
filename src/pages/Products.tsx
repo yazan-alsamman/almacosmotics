@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
 import Footer from '@/components/Footer';
-import { products } from '@/data/products';
+import { useCatalogStore } from '@/store/catalogStore';
 
 const categories = [
   { key: 'all', label: 'All' },
@@ -13,13 +13,14 @@ const categories = [
 ];
 
 const Products = () => {
+  const catalog = useCatalogStore((s) => s.products);
   const [searchParams] = useSearchParams();
   const initialCat = searchParams.get('cat') || 'all';
   const [activeCategory, setActiveCategory] = useState(initialCat);
 
   const filtered = useMemo(
-    () => (activeCategory === 'all' ? products : products.filter((p) => p.category === activeCategory)),
-    [activeCategory]
+    () => (activeCategory === 'all' ? catalog : catalog.filter((p) => p.category === activeCategory)),
+    [activeCategory, catalog]
   );
 
   return (

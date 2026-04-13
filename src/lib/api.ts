@@ -1,9 +1,9 @@
 /**
  * API service layer — structured for future Node.js/Express backend integration.
- * Currently returns mock data. Replace BASE_URL and remove mocks when backend is ready.
+ * Replace with fetch() calls to your Express API when ready.
  */
 
-import { products } from '@/data/products';
+import { useCatalogStore } from '@/store/catalogStore';
 import { Product, Order, User } from '@/types';
 
 const BASE_URL = '/api'; // Future: 'https://api.almacosmetics.com'
@@ -16,24 +16,24 @@ const headers = {
 export const api = {
   products: {
     getAll: async (): Promise<Product[]> => {
-      // Future: return fetch(`${BASE_URL}/products`).then(r => r.json());
-      return Promise.resolve(products);
+      return Promise.resolve(useCatalogStore.getState().products);
     },
     getById: async (id: string): Promise<Product | undefined> => {
-      return Promise.resolve(products.find(p => p.id === id));
+      return Promise.resolve(useCatalogStore.getState().products.find((p) => p.id === id));
     },
     getByCategory: async (category: string): Promise<Product[]> => {
-      return Promise.resolve(products.filter(p => p.category === category));
+      return Promise.resolve(
+        useCatalogStore.getState().products.filter((p) => p.category === category)
+      );
     },
   },
 
   orders: {
-    create: async (order: Omit<Order, 'id' | 'status' | 'createdAt'>): Promise<Order> => {
+    create: async (order: Omit<Order, 'id' | 'createdAt'>): Promise<Order> => {
       // Future: return fetch(`${BASE_URL}/orders`, { method: 'POST', headers, body: JSON.stringify(order) }).then(r => r.json());
       return Promise.resolve({
         ...order,
         id: `ORD-${Date.now()}`,
-        status: 'pending',
         createdAt: new Date().toISOString(),
       });
     },
@@ -53,3 +53,5 @@ export const api = {
     },
   },
 };
+
+export { BASE_URL };

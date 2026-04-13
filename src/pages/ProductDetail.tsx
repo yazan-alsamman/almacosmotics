@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Minus, Plus, ShoppingBag, Star } from 'lucide-react';
-import { getProductById, formatPrice } from '@/data/products';
+import { formatPrice } from '@/data/products';
+import { useCatalogStore } from '@/store/catalogStore';
 import { useCartStore } from '@/store/cartStore';
 import { useStockStore } from '@/store/stockStore';
 import Footer from '@/components/Footer';
@@ -16,7 +17,7 @@ import {
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = id ? getProductById(id) : undefined;
+  const product = useCatalogStore((s) => (id ? s.products.find((p) => p.id === id) : undefined));
   const addItem = useCartStore((s) => s.addItem);
   const stock = useStockStore((s) => (product ? s.getStock(product.id) : 0));
 

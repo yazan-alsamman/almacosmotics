@@ -1,11 +1,12 @@
 import HeroSection from '@/components/HeroSection';
 import ProductCard from '@/components/ProductCard';
 import Footer from '@/components/Footer';
-import { products } from '@/data/products';
+import { useCatalogStore } from '@/store/catalogStore';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const Index = () => {
+  const products = useCatalogStore((s) => s.products);
   const featured = products.filter((p) => p.tags?.includes('bestseller'));
 
   return (

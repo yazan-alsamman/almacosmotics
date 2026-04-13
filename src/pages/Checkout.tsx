@@ -7,8 +7,10 @@ import { useAuthStore } from '@/store/authStore';
 import SyriaMap from '@/components/SyriaMap';
 import DeliveryMap from '@/components/DeliveryMap';
 import Footer from '@/components/Footer';
-import { Governorate, LatLng } from '@/types';
+import { Governorate, LatLng, Order } from '@/types';
 import { formatPrice } from '@/data/products';
+import { useAdminStore } from '@/store/adminStore';
+import { useLanguage } from '@/i18n/LanguageContext';
 import { Check, Sparkles, Truck } from 'lucide-react';
 
 const GIFT_WRAP_FEE = 10000;
@@ -25,6 +27,8 @@ const Checkout = () => {
   const user = useAuthStore((s) => s.user);
 
   const { items, subtotal, giftWrapping, clearCart } = useCartStore();
+  const addOrder = useAdminStore((s) => s.addOrder);
+  const { t } = useLanguage();
   const sub = subtotal();
   const [selectedGov, setSelectedGov] = useState<Governorate | null>(null);
   const [pin, setPin] = useState<LatLng | null>(null);
@@ -63,7 +67,29 @@ const Checkout = () => {
     Boolean(selectedGov && deliveryDate && pin && items.length > 0);
 
   const handlePlaceOrder = () => {
-    if (!canPlaceOrder) return;
+    if (!canPlaceOrder || !selectedGov || !deliveryDate || !pin || !user) return;
+    const order: Order = {
+      id: `ORD-${Date.now()}`,
+      items: items.map((i) => ({ ...i })),
+      subtotal: sub,
+      shippingFee,
+      giftWrapping,
+      giftWrappingFee: giftFee,
+      total,
+      governorate: selectedGov.name,
+      governorateId: selectedGov.id,
+      customer: {
+        name: user.name,
+        phone: user.phone,
+        address: `${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}`,
+        governorate: selectedGov.name,
+      },
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+      deliveryDate: deliveryDate.toISOString(),
+      location: { lat: pin.lat, lng: pin.lng },
+    };
+    addOrder(order);
     setOrderPlaced(true);
     clearCart();
   };
@@ -71,7 +97,7 @@ const Checkout = () => {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen pt-24 flex items-center justify-center text-sm font-sans text-muted-foreground">
-        Redirecting to sign in…
+        {t('checkout.redirecting')}
       </div>
     );
   }
@@ -88,10 +114,10 @@ const Checkout = () => {
           >
             <Check size={28} className="text-background" />
           </motion.div>
-          <h1 className="font-serif text-2xl">Order Confirmed</h1>
+          <h1 className="font-serif text-2xl">{t('checkout.confirmed')}</h1>
           <p className="text-sm font-sans text-muted-foreground mt-3 leading-relaxed">
-            Thank you for your purchase. You&apos;ll receive a WhatsApp confirmation shortly
-            {deliveryDate ? ` for ${format(deliveryDate, 'EEEE, MMM d')}` : ''}.
+            {t('checkout.thanks')}
+            {deliveryDate ? ` — ${format(deliveryDate, 'EEEE, MMM d')}` : ''}.
           </p>
         </motion.div>
       </div>
@@ -106,16 +132,17 @@ const Checkout = () => {
           animate={{ opacity: 1, y: 0 }}
           className="font-serif text-3xl md:text-4xl text-center mb-4"
         >
-          Checkout
+          {t('checkout.title')}
         </motion.h1>
         {user && (
           <p className="text-center text-sm font-sans text-muted-foreground mb-10">
-            Signed in as <span className="text-foreground font-medium">{user.name}</span> · {user.phone}
+            {t('checkout.signedIn')}{' '}
+            <span className="text-foreground font-medium">{user.name}</span> · {user.phone}
           </p>
         )}
 
         {items.length === 0 ? (
-          <p className="text-center text-muted-foreground font-sans">Your bag is empty.</p>
+          <p className="text-center text-muted-foreground font-sans">{t('checkout.empty')}</p>
         ) : (
           <div className="space-y-10">
             <motion.div
@@ -124,7 +151,7 @@ const Checkout = () => {
               transition={{ delay: 0.08 }}
               className="space-y-3"
             >
-              <h2 className="font-sans text-xs tracking-widest uppercase mb-4">Order Summary</h2>
+              <h2 className="font-sans text-xs tracking-widest uppercase mb-4">{t('checkout.summary')}</h2>
               {items.map((item) => (
                 <div key={item.product.id} className="flex items-center gap-4 p-3 rounded-xl bg-card border border-border/50">
                   <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
@@ -144,7 +171,7 @@ const Checkout = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.12 }}
             >
-              <h2 className="font-sans text-xs tracking-widest uppercase mb-4">Delivery area</h2>
+              <h2 className="font-sans text-xs tracking-widest uppercase mb-4">{t('checkout.delivery')}</h2>
               <SyriaMap onSelect={setSelectedGov} selected={selectedGov} />
             </motion.div>
 
@@ -156,10 +183,10 @@ const Checkout = () => {
               >
                 <h2 className="font-sans text-xs tracking-widest uppercase flex items-center gap-2">
                   <Truck size={14} />
-                  Pin your location
+                  {t('checkout.pinTitle')}
                 </h2>
                 <p className="text-xs font-sans text-muted-foreground leading-relaxed">
-                  Move the pin to your building entrance so our driver can find you precisely.
+                  {t('checkout.pinHint')}
                 </p>
                 <DeliveryMap
                   mapKey={selectedGov.id}
@@ -179,7 +206,7 @@ const Checkout = () => {
               transition={{ delay: 0.16 }}
               className="space-y-4"
             >
-              <h2 className="font-sans text-xs tracking-widest uppercase">Preferred delivery day</h2>
+              <h2 className="font-sans text-xs tracking-widest uppercase">{t('checkout.deliveryDay')}</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {deliveryDays.map((d) => {
                   const selected = deliveryDate && isSameDay(d, deliveryDate);
@@ -215,28 +242,31 @@ const Checkout = () => {
               transition={{ delay: 0.2 }}
               className="border border-border/70 rounded-2xl p-6 space-y-3 bg-card/40"
             >
-              <h2 className="font-serif text-lg mb-2">Final summary</h2>
+              <h2 className="font-serif text-lg mb-2">{t('checkout.finalSummary')}</h2>
               <div className="flex justify-between text-sm font-sans">
-                <span className="text-muted-foreground">Items</span>
+                <span className="text-muted-foreground">{t('checkout.items')}</span>
                 <span>{formatPrice(sub)}</span>
               </div>
               {giftWrapping && (
                 <div className="flex justify-between text-sm font-sans">
-                  <span className="text-muted-foreground">Gift wrapping</span>
+                  <span className="text-muted-foreground">{t('checkout.giftWrap')}</span>
                   <span>{formatPrice(GIFT_WRAP_FEE)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm font-sans">
-                <span className="text-muted-foreground">Shipping {selectedGov ? `(${selectedGov.name})` : ''}</span>
+                <span className="text-muted-foreground">
+                  {t('checkout.shipping')} {selectedGov ? `(${selectedGov.name})` : ''}
+                </span>
                 <span>{selectedGov ? (shippingFee === 0 ? 'Free' : formatPrice(shippingFee)) : '—'}</span>
               </div>
               <div className="flex justify-between font-serif text-xl pt-4 border-t border-border">
-                <span>Total</span>
+                <span>{t('checkout.total')}</span>
                 <span>{formatPrice(total)}</span>
               </div>
               {deliveryDate && (
                 <p className="text-xs font-sans text-muted-foreground pt-1">
-                  Requested delivery: <span className="text-foreground">{format(deliveryDate, 'EEEE, MMMM d, yyyy')}</span>
+                  {t('checkout.requested')}:{' '}
+                  <span className="text-foreground">{format(deliveryDate, 'EEEE, MMMM d, yyyy')}</span>
                 </p>
               )}
             </motion.div>
@@ -247,7 +277,7 @@ const Checkout = () => {
               disabled={!canPlaceOrder}
               className="w-full py-4 bg-foreground text-background rounded-2xl font-sans text-sm tracking-[0.2em] uppercase hover:opacity-90 transition-opacity disabled:opacity-40 shadow-xl"
             >
-              Confirm order
+              {t('checkout.confirm')}
             </button>
           </div>
         )}

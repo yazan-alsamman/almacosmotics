@@ -2,7 +2,7 @@ import { Product, Governorate } from '@/types';
 
 const g = (main: string, ...extra: string[]) => [main, ...extra];
 
-export const products: Product[] = [
+export const seedProducts: Product[] = [
   {
     id: '1',
     name: 'Rose Petal Blush',
@@ -190,7 +190,3 @@ export const governorates: Governorate[] = [
 export const formatPrice = (price: number): string => {
   return `${price.toLocaleString()} SYP`;
 };
-
-export function getProductById(id: string): Product | undefined {
-  return products.find((p) => p.id === id);
-}

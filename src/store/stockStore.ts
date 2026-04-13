@@ -1,11 +1,13 @@
 import { create } from 'zustand';
-import { products } from '@/data/products';
+import { seedProducts } from '@/data/products';
 
 interface StockStore {
   stock: Record<string, number>;
   getStock: (productId: string) => number;
   decrementStock: (productId: string, quantity?: number) => void;
   incrementStock: (productId: string, quantity?: number) => void;
+  setInitialStock: (productId: string, quantity: number) => void;
+  removeProduct: (productId: string) => void;
 }
 
 const defaultStock: Record<string, number> = {
@@ -20,7 +22,7 @@ const defaultStock: Record<string, number> = {
 };
 
 const initialStock: Record<string, number> = {};
-products.forEach((p) => {
+seedProducts.forEach((p) => {
   initialStock[p.id] = defaultStock[p.id] ?? 10;
 });
 
@@ -41,4 +43,13 @@ export const useStockStore = create<StockStore>((set, get) => ({
         [productId]: (state.stock[productId] ?? 0) + quantity,
       },
     })),
+  setInitialStock: (productId, quantity) =>
+    set((state) => ({
+      stock: { ...state.stock, [productId]: quantity },
+    })),
+  removeProduct: (productId) =>
+    set((state) => {
+      const { [productId]: _, ...rest } = state.stock;
+      return { stock: rest };
+    }),
 }));

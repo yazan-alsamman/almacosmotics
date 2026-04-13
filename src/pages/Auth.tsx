@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, ArrowRight, Check, Sparkles } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
+import { useAdminStore } from '@/store/adminStore';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 type Step = 'info' | 'otp' | 'verified';
 
@@ -15,6 +17,8 @@ const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
+  const upsertUser = useAdminStore((s) => s.upsertUser);
+  const { t } = useLanguage();
 
   const redirectTo = searchParams.get('redirect') || '/products';
   const memberGate = searchParams.get('reason') === 'member' || redirectTo.startsWith('/checkout');
@@ -68,9 +72,9 @@ const Auth = () => {
           >
             <Sparkles className="w-5 h-5 text-foreground shrink-0 mt-0.5" />
             <div>
-              <p className="font-serif text-sm leading-snug">Member Exclusive</p>
+              <p className="font-serif text-sm leading-snug">{t('auth.memberTitle')}</p>
               <p className="text-xs font-sans text-muted-foreground mt-1 leading-relaxed">
-                Alma checkout is reserved for verified members. Sign in with OTP to unlock delivery and your order history.
+                {t('auth.memberBody')}
               </p>
             </div>
           </motion.div>
@@ -80,14 +84,14 @@ const Auth = () => {
           <div className="w-16 h-16 rounded-full bg-primary mx-auto mb-4 flex items-center justify-center shadow-lg">
             <span className="font-serif text-primary-foreground font-bold tracking-wider">AC</span>
           </div>
-          <h1 className="font-serif text-2xl">Welcome to Alma</h1>
+          <h1 className="font-serif text-2xl">{t('auth.welcome')}</h1>
         </div>
 
         <AnimatePresence mode="wait">
           {step === 'info' && (
             <motion.div key="info" variants={pageVariants} initial="enter" animate="center" exit="exit" className="space-y-4">
               <div>
-                <label className="text-xs font-sans text-muted-foreground mb-1.5 block">Full Name</label>
+                <label className="text-xs font-sans text-muted-foreground mb-1.5 block">{t('auth.name')}</label>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -96,7 +100,7 @@ const Auth = () => {
                 />
               </div>
               <div>
-                <label className="text-xs font-sans text-muted-foreground mb-1.5 block">Phone Number</label>
+                <label className="text-xs font-sans text-muted-foreground mb-1.5 block">{t('auth.phone')}</label>
                 <div className="flex items-center gap-2 p-3.5 rounded-xl border border-border bg-background">
                   <span className="text-sm font-sans text-muted-foreground">+963</span>
                   <input
@@ -112,7 +116,7 @@ const Auth = () => {
                 disabled={!name || !phone}
                 className="w-full py-3.5 bg-foreground text-background rounded-xl font-sans text-sm tracking-widest uppercase flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-40"
               >
-                Continue <ArrowRight size={16} />
+                {t('auth.continue')} <ArrowRight size={16} />
               </button>
             </motion.div>
           )}
@@ -123,7 +127,7 @@ const Auth = () => {
                 <div className="w-12 h-12 rounded-full bg-[hsl(142,70%,45%)] mx-auto mb-3 flex items-center justify-center">
                   <Phone size={20} className="text-background" />
                 </div>
-                <p className="text-sm font-sans text-muted-foreground">We sent a code via WhatsApp to</p>
+                <p className="text-sm font-sans text-muted-foreground">{t('auth.sentCode')}</p>
                 <p className="font-sans text-sm font-medium mt-1">+963 {phone}</p>
               </div>
 
@@ -148,7 +152,7 @@ const Auth = () => {
               <div className="text-center">
                 {countdown > 0 ? (
                   <p className="text-xs font-sans text-muted-foreground">
-                    Resend code in <span className="text-foreground font-medium">{countdown}s</span>
+                    {t('auth.resendIn')} <span className="text-foreground font-medium">{countdown}s</span>
                   </p>
                 ) : (
                   <button
@@ -156,7 +160,7 @@ const Auth = () => {
                     onClick={() => setCountdown(60)}
                     className="text-xs font-sans underline hover:opacity-70 transition-opacity"
                   >
-                    Resend code
+                    {t('auth.resend')}
                   </button>
                 )}
               </div>
@@ -174,23 +178,26 @@ const Auth = () => {
                 <Check size={28} className="text-background" />
               </motion.div>
               <div>
-                <h2 className="font-serif text-xl">Welcome, {name}</h2>
-                <p className="text-sm font-sans text-muted-foreground mt-2">Your account is verified</p>
+                <h2 className="font-serif text-xl">{t('auth.welcomeUser')}, {name}</h2>
+                <p className="text-sm font-sans text-muted-foreground mt-2">{t('auth.verified')}</p>
               </div>
               <button
                 type="button"
                 onClick={() => {
+                  const phoneFull = `+963${phone.replace(/\s/g, '')}`;
+                  const uid = `member-${phone.replace(/\s/g, '')}`;
                   login({
-                    id: 'member-1',
+                    id: uid,
                     name,
-                    phone: `+963${phone.replace(/\s/g, '')}`,
+                    phone: phoneFull,
                     isVerified: true,
                   });
+                  upsertUser({ id: uid, name, phone: phoneFull, isVerified: true });
                   navigate(redirectTo.startsWith('/') ? redirectTo : '/products', { replace: true });
                 }}
                 className="w-full py-3.5 bg-foreground text-background rounded-xl font-sans text-sm tracking-widest uppercase hover:opacity-90 transition-opacity"
               >
-                {memberGate ? 'Continue to checkout' : 'Start Shopping'}
+                {memberGate ? t('auth.continueCheckout') : t('auth.startShopping')}
               </button>
             </motion.div>
           )}
