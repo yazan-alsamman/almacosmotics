@@ -1,0 +1,24 @@
+---
+description: After completing code edits, commit and push to yazan-alsamman/almacosmotics
+alwaysApply: true
+---
+
+# Push changes to GitHub (almacosmotics)
+
+When you **finish** making or saving code changes for the user’s request in this workspace, **immediately** push them to the canonical remote repository:
+
+- **Remote URL:** `https://github.com/yazan-alsamman/almacosmotics.git`
+- **Branch:** `main` (use `origin/main` as upstream)
+
+## Required workflow (end of each task that changes files)
+
+1. `git status` — confirm what changed.
+2. `git add` only the files you touched for this task (or all changed project files if that matches the user’s intent).
+3. `git commit -m "<short descriptive message>"` — one clear sentence; skip only if there is nothing to commit.
+4. Ensure `origin` points at `https://github.com/yazan-alsamman/almacosmotics.git` (`git remote -v`). If it differs, run:  
+   `git remote set-url origin https://github.com/yazan-alsamman/almacosmotics.git`
+5. `git push -u origin main` (or `git push` if tracking is already set).
+
+Do **not** leave the workspace with unpushed commits after you have edited project code for the user, unless `git push` fails (auth/network) — in that case, report the error clearly.
+
+Do **not** push unrelated local changes the user did not ask you to include; if unsure, ask or commit only your edits.
