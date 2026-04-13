@@ -11,6 +11,7 @@ import { Governorate, LatLng, Order } from '@/types';
 import { formatPrice } from '@/data/products';
 import { useAdminStore } from '@/store/adminStore';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { productDisplayName } from '@/lib/productDisplay';
 import { Check, Sparkles, Truck } from 'lucide-react';
 
 const GIFT_WRAP_FEE = 10000;
@@ -28,7 +29,7 @@ const Checkout = () => {
 
   const { items, subtotal, giftWrapping, clearCart } = useCartStore();
   const addOrder = useAdminStore((s) => s.addOrder);
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const sub = subtotal();
   const [selectedGov, setSelectedGov] = useState<Governorate | null>(null);
   const [pin, setPin] = useState<LatLng | null>(null);
@@ -155,11 +156,11 @@ const Checkout = () => {
               {items.map((item) => (
                 <div key={item.product.id} className="flex items-center gap-4 p-3 rounded-xl bg-card border border-border/50">
                   <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
-                    <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                    <img src={item.product.image} alt={productDisplayName(item.product, locale)} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-serif text-sm truncate">{item.product.name}</p>
-                    <p className="text-xs text-muted-foreground font-sans">Qty: {item.quantity}</p>
+                    <p className="font-serif text-sm truncate">{productDisplayName(item.product, locale)}</p>
+                    <p className="text-xs text-muted-foreground font-sans">{t('checkout.qty')}: {item.quantity}</p>
                   </div>
                   <p className="text-sm font-sans">{formatPrice(item.product.price * item.quantity)}</p>
                 </div>
@@ -227,7 +228,7 @@ const Checkout = () => {
                       {fast && (
                         <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-sans tracking-wide uppercase bg-primary/40 text-foreground px-2 py-0.5 rounded-full">
                           <Sparkles size={10} />
-                          Fast
+                          {t('checkout.fast')}
                         </span>
                       )}
                     </button>
@@ -257,7 +258,7 @@ const Checkout = () => {
                 <span className="text-muted-foreground">
                   {t('checkout.shipping')} {selectedGov ? `(${selectedGov.name})` : ''}
                 </span>
-                <span>{selectedGov ? (shippingFee === 0 ? 'Free' : formatPrice(shippingFee)) : '—'}</span>
+                <span>{selectedGov ? (shippingFee === 0 ? t('checkout.free') : formatPrice(shippingFee)) : '—'}</span>
               </div>
               <div className="flex justify-between font-serif text-xl pt-4 border-t border-border">
                 <span>{t('checkout.total')}</span>

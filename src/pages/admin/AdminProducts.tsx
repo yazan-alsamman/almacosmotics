@@ -82,14 +82,14 @@ const AdminProducts = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('admin.all')}</SelectItem>
-              <SelectItem value="makeup">Makeup</SelectItem>
-              <SelectItem value="skincare">Skincare</SelectItem>
-              <SelectItem value="fragrance">Fragrance</SelectItem>
+              <SelectItem value="makeup">{t('nav.makeup')}</SelectItem>
+              <SelectItem value="skincare">{t('nav.skincare')}</SelectItem>
+              <SelectItem value="fragrance">{t('nav.fragrance')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-1">
-          <label className="text-[10px] uppercase tracking-widest text-muted-foreground">{t('admin.priceRange')} max</label>
+          <label className="text-[10px] uppercase tracking-widest text-muted-foreground">{t('admin.priceMaxLabel')}</label>
           <Input
             type="number"
             placeholder="—"

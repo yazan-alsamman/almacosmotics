@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore';
 import { formatPrice } from '@/data/products';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { productDisplayName } from '@/lib/productDisplay';
 
 const FREE_SHIPPING_THRESHOLD = 200000;
 const GIFT_WRAP_FEE = 10000;
@@ -15,7 +16,7 @@ const CartDrawer = () => {
     useCartStore();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const navigate = useNavigate();
-  const { t, dir } = useLanguage();
+  const { t, dir, locale } = useLanguage();
   const sub = subtotal();
   const offscreenX = dir === 'rtl' ? '-100%' : '100%';
   const shippingProgress = Math.min((sub / FREE_SHIPPING_THRESHOLD) * 100, 100);
@@ -123,17 +124,17 @@ const CartDrawer = () => {
                         className="flex gap-4"
                       >
                         <div className="w-20 h-24 rounded-lg overflow-hidden bg-card flex-shrink-0 ring-1 ring-border/40">
-                          <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                          <img src={item.product.image} alt={productDisplayName(item.product, locale)} className="w-full h-full object-cover" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-serif text-sm truncate">{item.product.name}</h4>
+                          <h4 className="font-serif text-sm truncate">{productDisplayName(item.product, locale)}</h4>
                           <p className="text-xs text-muted-foreground font-sans mt-0.5">{formatPrice(item.product.price)}</p>
                           <div className="flex items-center gap-3 mt-2">
                             <button
                               type="button"
                               onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                               className="hover:opacity-70"
-                              aria-label="Decrease quantity"
+                              aria-label={t('cartAria.decreaseQty')}
                             >
                               <Minus size={14} />
                             </button>
@@ -142,7 +143,7 @@ const CartDrawer = () => {
                               type="button"
                               onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                               className="hover:opacity-70"
-                              aria-label="Increase quantity"
+                              aria-label={t('cartAria.increaseQty')}
                             >
                               <Plus size={14} />
                             </button>
@@ -150,7 +151,7 @@ const CartDrawer = () => {
                               type="button"
                               onClick={() => removeItem(item.product.id)}
                               className="ms-auto hover:opacity-70 text-muted-foreground"
-                              aria-label="Remove"
+                              aria-label={t('cartAria.remove')}
                             >
                               <Trash2 size={14} />
                             </button>

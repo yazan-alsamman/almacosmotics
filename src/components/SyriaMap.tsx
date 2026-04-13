@@ -4,6 +4,7 @@ import { governorates } from '@/data/products';
 import { Governorate } from '@/types';
 import { MapPin, ChevronDown } from 'lucide-react';
 import { formatPrice } from '@/data/products';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 interface SyriaMapProps {
   onSelect: (gov: Governorate) => void;
@@ -12,10 +13,13 @@ interface SyriaMapProps {
 
 const SyriaMap = ({ onSelect, selected }: SyriaMapProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t, locale } = useLanguage();
+
+  const govPrimary = (g: Governorate) => (locale === 'ar' ? g.nameAr : g.name);
 
   return (
     <div className="space-y-4">
-      <label className="text-sm font-sans text-muted-foreground">Delivery Governorate</label>
+      <label className="text-sm font-sans text-muted-foreground">{t('syriaMap.label')}</label>
       
       {/* Styled dropdown */}
       <div className="relative">
@@ -26,7 +30,7 @@ const SyriaMap = ({ onSelect, selected }: SyriaMapProps) => {
           <div className="flex items-center gap-3">
             <MapPin size={18} />
             <span className="font-sans text-sm">
-              {selected ? `${selected.name} — ${selected.nameAr}` : 'Select your governorate'}
+              {selected ? `${govPrimary(selected)} — ${locale === 'ar' ? selected.name : selected.nameAr}` : t('syriaMap.selectPlaceholder')}
             </span>
           </div>
           <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -55,8 +59,8 @@ const SyriaMap = ({ onSelect, selected }: SyriaMapProps) => {
                     }`}
                   >
                     <div>
-                      <span className="text-sm font-sans">{gov.name}</span>
-                      <span className="text-xs text-muted-foreground ml-2">{gov.nameAr}</span>
+                      <span className="text-sm font-sans">{govPrimary(gov)}</span>
+                      <span className="text-xs text-muted-foreground ms-2">{locale === 'ar' ? gov.name : gov.nameAr}</span>
                     </div>
                     <span className="text-xs font-sans text-muted-foreground">{formatPrice(gov.shippingFee)}</span>
                   </button>
@@ -76,11 +80,11 @@ const SyriaMap = ({ onSelect, selected }: SyriaMapProps) => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-serif text-sm">{selected.name}</p>
-              <p className="text-xs text-muted-foreground font-sans mt-0.5">Estimated delivery: 2-5 days</p>
+              <p className="font-serif text-sm">{govPrimary(selected)}</p>
+              <p className="text-xs text-muted-foreground font-sans mt-0.5">{t('syriaMap.estDelivery')}</p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-muted-foreground font-sans">Shipping Fee</p>
+              <p className="text-xs text-muted-foreground font-sans">{t('syriaMap.shippingFee')}</p>
               <p className="font-serif text-sm">{formatPrice(selected.shippingFee)}</p>
             </div>
           </div>

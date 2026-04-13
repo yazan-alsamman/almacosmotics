@@ -96,7 +96,7 @@ const Auth = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full p-3.5 rounded-xl border border-border bg-background font-sans text-sm focus:outline-none focus:border-foreground/30 transition-colors"
-                  placeholder="Enter your name"
+                  placeholder={t('auth.placeholderName')}
                 />
               </div>
               <div>
@@ -107,7 +107,7 @@ const Auth = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="flex-1 font-sans text-sm bg-transparent focus:outline-none"
-                    placeholder="9XX XXX XXX"
+                    placeholder={t('auth.placeholderPhone')}
                   />
                 </div>
               </div>

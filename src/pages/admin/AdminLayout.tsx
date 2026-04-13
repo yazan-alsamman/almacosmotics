@@ -40,12 +40,12 @@ const AdminLayout = () => {
   useEffect(() => {
     if (prevOrderCount.current !== null && orders.length > prevOrderCount.current && orders[0]) {
       const o = orders[0];
-      toast.success('New order received', {
-        description: `${o.customer.name} · ${o.total.toLocaleString()} SYP`,
+      toast.success(t('toasts.newOrder'), {
+        description: `${o.customer.name} · ${o.total.toLocaleString()} ${t('common.currency')}`,
       });
     }
     prevOrderCount.current = orders.length;
-  }, [orders]);
+  }, [orders, t]);
 
   return (
     <div className="min-h-screen admin-surface flex flex-col md:flex-row">

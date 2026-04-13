@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 const Footer = () => {
+  const { t } = useLanguage();
   return (
     <footer className="bg-card/50 backdrop-blur-sm border-t border-border/50 mt-20">
       <div className="container mx-auto px-4 py-16">
@@ -13,54 +15,54 @@ const Footer = () => {
               </div>
               <div>
                 <h3 className="font-serif text-lg leading-none">Alma</h3>
-                <span className="font-sans text-[10px] tracking-[0.3em] uppercase text-muted-foreground">Cosmetics</span>
+                <span className="font-sans text-[10px] tracking-[0.3em] uppercase text-muted-foreground">{t('footer.cosmetics')}</span>
               </div>
             </div>
             <p className="text-sm font-sans text-muted-foreground leading-relaxed">
-              Luxury beauty inspired by the timeless elegance of Syria. Crafted with nature's finest ingredients.
+              {t('footer.tagline')}
             </p>
           </div>
 
           {/* Shop */}
           <div>
-            <h4 className="font-sans text-xs tracking-widest uppercase mb-4 text-foreground">Shop</h4>
+            <h4 className="font-sans text-xs tracking-widest uppercase mb-4 text-foreground">{t('footer.shop')}</h4>
             <ul className="space-y-2.5 text-sm font-sans text-muted-foreground">
-              <li><Link to="/products?cat=makeup" className="hover:text-foreground transition-colors">Makeup</Link></li>
-              <li><Link to="/products?cat=skincare" className="hover:text-foreground transition-colors">Skincare</Link></li>
-              <li><Link to="/products?cat=fragrance" className="hover:text-foreground transition-colors">Fragrance</Link></li>
-              <li><Link to="/products" className="hover:text-foreground transition-colors">All Products</Link></li>
+              <li><Link to="/products?cat=makeup" className="hover:text-foreground transition-colors">{t('nav.makeup')}</Link></li>
+              <li><Link to="/products?cat=skincare" className="hover:text-foreground transition-colors">{t('nav.skincare')}</Link></li>
+              <li><Link to="/products?cat=fragrance" className="hover:text-foreground transition-colors">{t('nav.fragrance')}</Link></li>
+              <li><Link to="/products" className="hover:text-foreground transition-colors">{t('footer.allProducts')}</Link></li>
             </ul>
           </div>
 
           {/* Help */}
           <div>
-            <h4 className="font-sans text-xs tracking-widest uppercase mb-4 text-foreground">Help</h4>
+            <h4 className="font-sans text-xs tracking-widest uppercase mb-4 text-foreground">{t('footer.help')}</h4>
             <ul className="space-y-2.5 text-sm font-sans text-muted-foreground">
-              <li className="hover:text-foreground transition-colors cursor-pointer">Shipping & Delivery</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">Returns & Exchanges</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">Contact Us</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">FAQ</li>
+              <li className="hover:text-foreground transition-colors cursor-pointer">{t('footer.shippingDelivery')}</li>
+              <li className="hover:text-foreground transition-colors cursor-pointer">{t('footer.returns')}</li>
+              <li className="hover:text-foreground transition-colors cursor-pointer">{t('footer.contact')}</li>
+              <li className="hover:text-foreground transition-colors cursor-pointer">{t('footer.faq')}</li>
             </ul>
           </div>
 
           {/* Connect */}
           <div>
-            <h4 className="font-sans text-xs tracking-widest uppercase mb-4 text-foreground">Connect</h4>
+            <h4 className="font-sans text-xs tracking-widest uppercase mb-4 text-foreground">{t('footer.connect')}</h4>
             <ul className="space-y-2.5 text-sm font-sans text-muted-foreground">
-              <li className="hover:text-foreground transition-colors cursor-pointer">Instagram</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">WhatsApp</li>
-              <li className="hover:text-foreground transition-colors cursor-pointer">Facebook</li>
+              <li className="hover:text-foreground transition-colors cursor-pointer">{t('footer.instagram')}</li>
+              <li className="hover:text-foreground transition-colors cursor-pointer">{t('footer.whatsapp')}</li>
+              <li className="hover:text-foreground transition-colors cursor-pointer">{t('footer.facebook')}</li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs font-sans text-muted-foreground">
-            © 2026 Alma Cosmetics. All rights reserved.
+            {t('footer.copyright')}
           </p>
           <div className="flex gap-6 text-xs font-sans text-muted-foreground">
-            <span className="hover:text-foreground transition-colors cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-foreground transition-colors cursor-pointer">Terms of Service</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">{t('footer.privacy')}</span>
+            <span className="hover:text-foreground transition-colors cursor-pointer">{t('footer.terms')}</span>
           </div>
         </div>
       </div>

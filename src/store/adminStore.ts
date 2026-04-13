@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { toast } from 'sonner'; // used by updateOrderStatus
+import { toast } from 'sonner';
+import { getStoredLocale, translate } from '@/i18n/translations';
 import { Order, RegisteredUser } from '@/types';
 
 interface AdminState {
@@ -57,7 +58,9 @@ export const useAdminStore = create<AdminState>()(
         set((s) => ({
           orders: s.orders.map((o) => (o.id === orderId ? { ...o, status } : o)),
         }));
-        toast.message('Order updated', { description: `${orderId} → ${status}` });
+        toast.message(translate(getStoredLocale(), 'toasts.orderUpdated'), {
+          description: `${orderId} → ${status}`,
+        });
       },
 
       upsertUser: (user) => {

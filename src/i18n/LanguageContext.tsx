@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { Locale } from './translations';
-import { translate } from './translations';
+import { LOCALE_STORAGE_KEY, translate } from './translations';
 
 interface LanguageContextValue {
   locale: Locale;
@@ -19,23 +19,21 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-const STORAGE_KEY = 'alma-locale';
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
     try {
-      const s = localStorage.getItem(STORAGE_KEY) as Locale | null;
+      const s = localStorage.getItem(LOCALE_STORAGE_KEY) as Locale | null;
       if (s === 'en' || s === 'ar') return s;
     } catch {
       /* ignore */
     }
-    return 'en';
+    return 'ar';
   });
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     try {
-      localStorage.setItem(STORAGE_KEY, l);
+      localStorage.setItem(LOCALE_STORAGE_KEY, l);
     } catch {
       /* ignore */
     }
@@ -47,6 +45,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale === 'ar' ? 'ar' : 'en';
     document.documentElement.dir = dir;
     document.body.dir = dir;
+    document.title =
+      locale === 'ar' ? 'ألما كوسمتكس | جمال فاخر' : 'Alma Cosmetics | Luxury Beauty';
   }, [locale, dir]);
 
   const t = useCallback((path: string) => translate(locale, path), [locale]);

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { toast } from 'sonner';
+import { getStoredLocale, translate } from '@/i18n/translations';
 import { Product } from '@/types';
 import { seedProducts } from '@/data/products';
 import { useStockStore } from './stockStore';
@@ -46,7 +47,7 @@ export const useCatalogStore = create<CatalogState>()(
         };
         set((s) => ({ products: [...s.products, product] }));
         useStockStore.getState().setInitialStock(id, 10);
-        toast.success('Product created', { description: product.name });
+        toast.success(translate(getStoredLocale(), 'toasts.productCreated'), { description: product.name });
         return product;
       },
 
@@ -54,13 +55,13 @@ export const useCatalogStore = create<CatalogState>()(
         set((s) => ({
           products: s.products.map((p) => (p.id === id ? { ...p, ...patch } : p)),
         }));
-        toast.message('Product updated', { description: patch.name ?? id });
+        toast.message(translate(getStoredLocale(), 'toasts.productUpdated'), { description: patch.name ?? id });
       },
 
       deleteProduct: (id) => {
         set((s) => ({ products: s.products.filter((p) => p.id !== id) }));
         useStockStore.getState().removeProduct(id);
-        toast.message('Product removed', { description: id });
+        toast.message(translate(getStoredLocale(), 'toasts.productRemoved'), { description: id });
       },
     }),
     { name: 'alma-catalog' }

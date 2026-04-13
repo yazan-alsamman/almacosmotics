@@ -1,8 +1,10 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 const HeroSection = () => {
+  const { t } = useLanguage();
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 150]);
@@ -58,9 +60,9 @@ const HeroSection = () => {
           transition={{ duration: 1, delay: 0.4 }}
           className="font-serif text-5xl md:text-7xl leading-tight tracking-tight"
         >
-          Beauty
+          {t('hero.title1')}
           <br />
-          <em className="italic">Redefined</em>
+          <em className="italic">{t('hero.title2')}</em>
         </motion.h1>
 
         <motion.p
@@ -69,8 +71,7 @@ const HeroSection = () => {
           transition={{ duration: 1, delay: 0.6 }}
           className="text-muted-foreground font-sans mt-6 text-base md:text-lg max-w-md mx-auto leading-relaxed"
         >
-          Luxury cosmetics inspired by the timeless elegance of Damascus.
-          Crafted with nature's finest ingredients.
+          {t('hero.subtitle')}
         </motion.p>
 
         <motion.div
@@ -82,7 +83,7 @@ const HeroSection = () => {
             to="/products"
             className="shimmer-btn inline-block mt-8 px-8 py-3.5 bg-foreground text-background rounded-full font-sans text-sm tracking-widest uppercase hover:opacity-90 transition-opacity"
           >
-            Explore Collection
+            {t('hero.cta')}
           </Link>
         </motion.div>
       </motion.div>

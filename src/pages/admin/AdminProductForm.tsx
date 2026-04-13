@@ -109,7 +109,7 @@ const AdminProductForm = () => {
       const url = await compressImageFile(file);
       setField('image', url);
     } catch (e) {
-      toast.error('Could not use this image', { description: e instanceof Error ? e.message : String(e) });
+      toast.error(t('toasts.imageError'), { description: e instanceof Error ? e.message : String(e) });
     } finally {
       setMediaBusy(false);
     }
@@ -124,7 +124,7 @@ const AdminProductForm = () => {
       const urls = await Promise.all(list.map((f) => compressImageFile(f)));
       setExtraGallery((g) => [...g, ...urls]);
     } catch (e) {
-      toast.error('Could not add images', { description: e instanceof Error ? e.message : String(e) });
+      toast.error(t('toasts.imagesError'), { description: e instanceof Error ? e.message : String(e) });
     } finally {
       setMediaBusy(false);
     }
@@ -208,9 +208,9 @@ const AdminProductForm = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="makeup">Makeup</SelectItem>
-                    <SelectItem value="skincare">Skincare</SelectItem>
-                    <SelectItem value="fragrance">Fragrance</SelectItem>
+                    <SelectItem value="makeup">{t('nav.makeup')}</SelectItem>
+                    <SelectItem value="skincare">{t('nav.skincare')}</SelectItem>
+                    <SelectItem value="fragrance">{t('nav.fragrance')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -292,7 +292,7 @@ const AdminProductForm = () => {
                 >
                   <Upload className="h-10 w-10 text-muted-foreground" aria-hidden />
                   <span className="text-sm font-sans text-foreground">{t('admin.uploadDropHint')}</span>
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">JPEG · PNG · WebP</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t('admin.imageFormats')}</span>
                 </button>
                 {form.image && (
                   <div className="relative mt-4 inline-block max-w-full">

@@ -1,5 +1,8 @@
 export type Locale = 'en' | 'ar';
 
+/** localStorage key — keep in sync with LanguageProvider */
+export const LOCALE_STORAGE_KEY = 'alma-locale';
+
 type Dict = Record<string, string | Dict>;
 
 export const en: Dict = {
@@ -31,21 +34,92 @@ export const en: Dict = {
     toFreeShip: 'away from free shipping',
     sparkle: 'Sparkle',
   },
-  auth: {
-    memberTitle: 'Member Exclusive',
-    memberBody:
-      'Alma checkout is reserved for verified members. Sign in with OTP to unlock delivery and your order history.',
-    welcome: 'Welcome to Alma',
-    name: 'Full Name',
-    phone: 'Phone Number',
-    continue: 'Continue',
-    sentCode: 'We sent a code via WhatsApp to',
-    resend: 'Resend code',
-    resendIn: 'Resend code in',
-    welcomeUser: 'Welcome',
-    verified: 'Your account is verified',
-    startShopping: 'Start Shopping',
-    continueCheckout: 'Continue to checkout',
+  hero: {
+    title1: 'Beauty',
+    title2: 'Redefined',
+    subtitle:
+      'Luxury cosmetics inspired by the timeless elegance of Damascus. Crafted with nature\'s finest ingredients.',
+    cta: 'Explore collection',
+  },
+  home: {
+    bestsellers: 'Bestsellers',
+    bestsellersSub: 'Our most loved products',
+    viewAll: 'View all',
+    rooted1: 'Rooted in',
+    rooted2: 'Damascus',
+    rootedBody:
+      'Alma Cosmetics draws from centuries of beauty traditions. Our ingredients are sourced from the fertile lands of Syria — Damascus roses, Aleppo olive oil, and aromatic oud — reimagined for the modern woman.',
+    discoverMore: 'Discover more',
+    luxuryAlt: 'Luxury cosmetics',
+  },
+  footer: {
+    cosmetics: 'Cosmetics',
+    tagline:
+      'Luxury beauty inspired by the timeless elegance of Syria. Crafted with nature\'s finest ingredients.',
+    shop: 'Shop',
+    help: 'Help',
+    connect: 'Connect',
+    shippingDelivery: 'Shipping & delivery',
+    returns: 'Returns & exchanges',
+    contact: 'Contact us',
+    faq: 'FAQ',
+    instagram: 'Instagram',
+    whatsapp: 'WhatsApp',
+    facebook: 'Facebook',
+    allProducts: 'All products',
+    copyright: '© 2026 Alma Cosmetics. All rights reserved.',
+    privacy: 'Privacy policy',
+    terms: 'Terms of service',
+  },
+  product: {
+    notFound: 'Product not found',
+    backToCollection: 'Back to collection',
+    back: 'Back',
+    outOfStock: 'Out of stock',
+    lowStock: 'Only {n} pieces left in stock',
+    inStock: '{n} in stock — ready to ship',
+    quantity: 'Quantity',
+    description: 'Description',
+    howToUse: 'How to use',
+    ingredients: 'Ingredients',
+    addToBag: 'Add to bag',
+    total: 'Total',
+    ariaAddToBag: 'Add to bag',
+    ariaDecrease: 'Decrease quantity',
+    ariaIncrease: 'Increase quantity',
+    badgeBestseller: 'Bestseller',
+    badgeNew: 'New',
+    onlyLeft: 'Only {n} left',
+  },
+  productsPage: {
+    title: 'Collection',
+    subtitle: 'Luxury beauty essentials',
+    catAll: 'All',
+  },
+  notFound: {
+    title: '404',
+    message: 'Page not found',
+    backHome: 'Return to home',
+  },
+  toasts: {
+    productCreated: 'Product created',
+    productUpdated: 'Product updated',
+    productRemoved: 'Product removed',
+    newOrder: 'New order received',
+    imageError: 'Could not use this image',
+    imagesError: 'Could not add images',
+    orderUpdated: 'Order updated',
+  },
+  cartAria: {
+    decreaseQty: 'Decrease quantity',
+    increaseQty: 'Increase quantity',
+    remove: 'Remove item',
+  },
+  syriaMap: {
+    label: 'Delivery governorate',
+    selectPlaceholder: 'Select your governorate',
+    estDelivery: 'Estimated delivery: 2–5 days',
+    shippingFee: 'Shipping fee',
   },
   checkout: {
     title: 'Checkout',
@@ -66,6 +140,27 @@ export const en: Dict = {
     confirmed: 'Order Confirmed',
     thanks: "Thank you for your purchase. You'll receive a WhatsApp confirmation shortly",
     empty: 'Your bag is empty.',
+    qty: 'Qty',
+    free: 'Free',
+    fast: 'Fast',
+  },
+  auth: {
+    memberTitle: 'Member Exclusive',
+    memberBody:
+      'Alma checkout is reserved for verified members. Sign in with OTP to unlock delivery and your order history.',
+    welcome: 'Welcome to Alma',
+    name: 'Full Name',
+    phone: 'Phone Number',
+    continue: 'Continue',
+    sentCode: 'We sent a code via WhatsApp to',
+    resend: 'Resend code',
+    resendIn: 'Resend code in',
+    welcomeUser: 'Welcome',
+    verified: 'Your account is verified',
+    startShopping: 'Start Shopping',
+    continueCheckout: 'Continue to checkout',
+    placeholderName: 'Enter your name',
+    placeholderPhone: '9XX XXX XXX',
   },
   admin: {
     brand: 'Alma',
@@ -85,6 +180,7 @@ export const en: Dict = {
     category: 'Category',
     all: 'All',
     priceRange: 'Price',
+    priceMaxLabel: 'Max price',
     stock: 'Stock',
     low: 'Low',
     actions: 'Actions',
@@ -135,6 +231,7 @@ export const en: Dict = {
     uploadDropHint: 'Drop an image here, or click to browse',
     uploadGalleryHint: 'Add more images — you can select several files',
     removePhoto: 'Remove',
+    imageFormats: 'JPEG · PNG · WebP',
     next: 'Next',
     back: 'Back',
     submit: 'Publish product',
@@ -173,6 +270,93 @@ export const ar: Dict = {
     toFreeShip: 'لتفعيل الشحن المجاني',
     sparkle: 'لمعان',
   },
+  hero: {
+    title1: 'الجمال',
+    title2: 'بأسلوب جديد',
+    subtitle:
+      'مستحضرات تجميل فاخرة مستلهم من أناقة دمشق الخالدة. صُنعت بأفضل ما في الطبيعة.',
+    cta: 'استكشفي المجموعة',
+  },
+  home: {
+    bestsellers: 'الأكثر مبيعاً',
+    bestsellersSub: 'منتجاتنا الأكثر حباً',
+    viewAll: 'عرض الكل',
+    rooted1: 'متجذّرة في',
+    rooted2: 'دمشق',
+    rootedBody:
+      'تستلهم ألما قروناً من تقاليد الجمال. مكوّناتنا من أرض سوريا — ورد دمشق، زيت زيتون حلب، وعود عطري — بصياغة عصرية للمرأة اليوم.',
+    discoverMore: 'اكتشفي المزيد',
+    luxuryAlt: 'مستحضرات تجميل فاخرة',
+  },
+  footer: {
+    cosmetics: 'Cosmetics',
+    tagline:
+      'جمال فاخر مستلهم من أناقة سوريا الخالدة. صُنع بأفضل ما في الطبيعة.',
+    shop: 'تسوقي',
+    help: 'مساعدة',
+    connect: 'توصّلي',
+    shippingDelivery: 'الشحن والتوصيل',
+    returns: 'الإرجاع والاستبدال',
+    contact: 'اتصلي بنا',
+    faq: 'الأسئلة الشائعة',
+    instagram: 'إنستغرام',
+    whatsapp: 'واتساب',
+    facebook: 'فيسبوك',
+    allProducts: 'جميع المنتجات',
+    copyright: '© 2026 Alma Cosmetics. جميع الحقوق محفوظة.',
+    privacy: 'سياسة الخصوصية',
+    terms: 'شروط الاستخدام',
+  },
+  product: {
+    notFound: 'المنتج غير موجود',
+    backToCollection: 'العودة إلى المجموعة',
+    back: 'رجوع',
+    outOfStock: 'غير متوفر',
+    lowStock: 'تبقى {n} قطعة فقط',
+    inStock: '{n} متوفر — جاهز للشحن',
+    quantity: 'الكمية',
+    description: 'الوصف',
+    howToUse: 'طريقة الاستخدام',
+    ingredients: 'المكوّنات',
+    addToBag: 'أضيفي إلى الحقيبة',
+    total: 'الإجمالي',
+    ariaAddToBag: 'أضيفي إلى الحقيبة',
+    ariaDecrease: 'تقليل الكمية',
+    ariaIncrease: 'زيادة الكمية',
+    badgeBestseller: 'الأكثر مبيعاً',
+    badgeNew: 'جديد',
+    onlyLeft: 'تبقى {n} فقط',
+  },
+  productsPage: {
+    title: 'المجموعة',
+    subtitle: 'أساسيات الجمال الفاخر',
+    catAll: 'الكل',
+  },
+  notFound: {
+    title: '404',
+    message: 'الصفحة غير موجودة',
+    backHome: 'العودة إلى الرئيسية',
+  },
+  toasts: {
+    productCreated: 'تم إنشاء المنتج',
+    productUpdated: 'تم تحديث المنتج',
+    productRemoved: 'تم حذف المنتج',
+    newOrder: 'طلب جديد وارد',
+    imageError: 'تعذّر استخدام هذه الصورة',
+    imagesError: 'تعذّر إضافة الصور',
+    orderUpdated: 'تم تحديث الطلب',
+  },
+  cartAria: {
+    decreaseQty: 'تقليل الكمية',
+    increaseQty: 'زيادة الكمية',
+    remove: 'إزالة المنتج',
+  },
+  syriaMap: {
+    label: 'محافظة التوصيل',
+    selectPlaceholder: 'اختر محافظتك',
+    estDelivery: 'التوصيل المتوقع: 2–5 أيام',
+    shippingFee: 'رسوم الشحن',
+  },
   auth: {
     memberTitle: 'حصري للأعضاء',
     memberBody:
@@ -188,6 +372,8 @@ export const ar: Dict = {
     verified: 'تم التحقق من حسابك',
     startShopping: 'تسوقي الآن',
     continueCheckout: 'المتابعة للدفع',
+    placeholderName: 'اكتبي اسمك',
+    placeholderPhone: '9XX XXX XXX',
   },
   checkout: {
     title: 'إتمام الطلب',
@@ -208,6 +394,9 @@ export const ar: Dict = {
     confirmed: 'تم تأكيد الطلب',
     thanks: 'شكراً لشرائك. ستصلك رسالة واتساب للتأكيد',
     empty: 'حقيبتك فارغة.',
+    qty: 'الكمية',
+    free: 'مجاناً',
+    fast: 'سريع',
   },
   admin: {
     brand: 'ألما',
@@ -227,6 +416,7 @@ export const ar: Dict = {
     category: 'التصنيف',
     all: 'الكل',
     priceRange: 'السعر',
+    priceMaxLabel: 'أقصى سعر',
     stock: 'المخزون',
     low: 'منخفض',
     actions: 'إجراءات',
@@ -277,6 +467,7 @@ export const ar: Dict = {
     uploadDropHint: 'اسحب الصورة هنا أو انقر للاختيار من الجهاز',
     uploadGalleryHint: 'إضافة المزيد — يمكن اختيار عدة ملفات',
     removePhoto: 'إزالة',
+    imageFormats: 'JPEG · PNG · WebP',
     next: 'التالي',
     back: 'رجوع',
     submit: 'نشر المنتج',
@@ -302,4 +493,15 @@ function resolve(dict: Dict, path: string): string {
 export function translate(locale: Locale, path: string): string {
   const dict = locale === 'ar' ? ar : en;
   return resolve(dict, path);
+}
+
+export function getStoredLocale(): Locale {
+  if (typeof window === 'undefined') return 'ar';
+  try {
+    const s = localStorage.getItem(LOCALE_STORAGE_KEY) as Locale | null;
+    if (s === 'en' || s === 'ar') return s;
+  } catch {
+    /* ignore */
+  }
+  return 'ar';
 }

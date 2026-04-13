@@ -7,6 +7,8 @@ import { useCatalogStore } from '@/store/catalogStore';
 import { useCartStore } from '@/store/cartStore';
 import { useStockStore } from '@/store/stockStore';
 import Footer from '@/components/Footer';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { productDisplayName } from '@/lib/productDisplay';
 import {
   Accordion,
   AccordionContent,
@@ -17,7 +19,9 @@ import {
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t, locale } = useLanguage();
   const product = useCatalogStore((s) => (id ? s.products.find((p) => p.id === id) : undefined));
+  const displayName = product ? productDisplayName(product, locale) : '';
   const addItem = useCartStore((s) => s.addItem);
   const stock = useStockStore((s) => (product ? s.getStock(product.id) : 0));
 
@@ -32,9 +36,9 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="min-h-screen pt-24 flex flex-col items-center justify-center px-4">
-        <p className="font-serif text-xl">Product not found</p>
+        <p className="font-serif text-xl">{t('product.notFound')}</p>
         <Link to="/products" className="mt-6 text-sm font-sans tracking-widest uppercase underline">
-          Back to collection
+          {t('product.backToCollection')}
         </Link>
       </div>
     );
@@ -59,7 +63,7 @@ const ProductDetail = () => {
           className="inline-flex items-center gap-2 text-xs font-sans tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft size={14} />
-          Back
+          {t('product.back')}
         </motion.button>
 
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
@@ -75,7 +79,7 @@ const ProductDetail = () => {
                 <motion.img
                   key={activeImage}
                   src={images[activeImage]}
-                  alt={product.name}
+                  alt={displayName}
                   initial={{ opacity: 0.85 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0.85 }}
@@ -114,7 +118,7 @@ const ProductDetail = () => {
                 <span className="text-xs font-sans text-muted-foreground">{product.rating}</span>
               </div>
               <h1 className="font-serif text-3xl md:text-4xl lg:text-[2.75rem] leading-tight tracking-tight">
-                {product.name}
+                {displayName}
               </h1>
               <p className="font-serif text-2xl mt-4">{formatPrice(product.price)}</p>
             </div>
@@ -122,7 +126,7 @@ const ProductDetail = () => {
             {/* Stock */}
             <div className="relative min-h-[1.75rem]">
               {stock <= 0 ? (
-                <p className="text-sm font-sans text-destructive font-medium">Out of stock</p>
+                <p className="text-sm font-sans text-destructive font-medium">{t('product.outOfStock')}</p>
               ) : lowStock ? (
                 <motion.p
                   className="text-sm font-sans font-semibold text-destructive inline-flex items-center gap-2.5"
@@ -133,22 +137,22 @@ const ProductDetail = () => {
                     className="inline-block w-2.5 h-2.5 rounded-full bg-destructive"
                     style={{ animation: 'pulse-ring 1.8s ease-in-out infinite' }}
                   />
-                  Only {stock} pieces left in stock
+                  {t('product.lowStock').replace('{n}', String(stock))}
                 </motion.p>
               ) : (
                 <p className="text-sm font-sans text-muted-foreground">
-                  <span className="text-foreground font-medium">{stock}</span> in stock — ready to ship
+                  {t('product.inStock').replace('{n}', String(stock))}
                 </p>
               )}
             </div>
 
             {/* Quantity */}
             <div className="flex items-center gap-6">
-              <span className="text-xs font-sans tracking-widest uppercase text-muted-foreground">Quantity</span>
+              <span className="text-xs font-sans tracking-widest uppercase text-muted-foreground">{t('product.quantity')}</span>
               <div className="inline-flex items-center gap-4 rounded-full border border-border px-2 py-1.5 bg-background/80 backdrop-blur-sm">
                 <button
                   type="button"
-                  aria-label="Decrease"
+                  aria-label={t('product.ariaDecrease')}
                   disabled={qty <= 1}
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
                   className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-card transition-colors disabled:opacity-30"
@@ -158,7 +162,7 @@ const ProductDetail = () => {
                 <span className="font-serif text-xl tabular-nums w-8 text-center">{Math.min(qty, maxAdd || 1)}</span>
                 <button
                   type="button"
-                  aria-label="Increase"
+                  aria-label={t('product.ariaIncrease')}
                   disabled={qty >= maxAdd || stock <= 0}
                   onClick={() => setQty((q) => Math.min(maxAdd, q + 1))}
                   className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-card transition-colors disabled:opacity-30"
@@ -170,19 +174,19 @@ const ProductDetail = () => {
 
             <Accordion type="single" collapsible defaultValue="description" className="border border-border/60 rounded-2xl px-4 bg-card/30">
               <AccordionItem value="description" className="border-border/50">
-                <AccordionTrigger className="font-serif text-lg hover:no-underline">Description</AccordionTrigger>
+                <AccordionTrigger className="font-serif text-lg hover:no-underline">{t('product.description')}</AccordionTrigger>
                 <AccordionContent className="text-sm font-sans text-muted-foreground leading-relaxed pb-4">
                   {product.description}
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="how" className="border-border/50">
-                <AccordionTrigger className="font-serif text-lg hover:no-underline">How to use</AccordionTrigger>
+                <AccordionTrigger className="font-serif text-lg hover:no-underline">{t('product.howToUse')}</AccordionTrigger>
                 <AccordionContent className="text-sm font-sans text-muted-foreground leading-relaxed pb-4">
                   {product.howToUse}
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="ingredients" className="border-none">
-                <AccordionTrigger className="font-serif text-lg hover:no-underline">Ingredients</AccordionTrigger>
+                <AccordionTrigger className="font-serif text-lg hover:no-underline">{t('product.ingredients')}</AccordionTrigger>
                 <AccordionContent className="text-sm font-sans text-muted-foreground leading-relaxed pb-4">
                   {product.ingredients}
                 </AccordionContent>
@@ -199,7 +203,7 @@ const ProductDetail = () => {
               className="hidden md:flex w-full py-4 bg-foreground text-background rounded-2xl font-sans text-sm tracking-[0.2em] uppercase items-center justify-center gap-3 hover:opacity-95 transition-opacity disabled:opacity-40 shadow-xl"
             >
               <ShoppingBag size={18} />
-              Add to Bag
+              {t('product.addToBag')}
             </motion.button>
           </motion.div>
         </div>
@@ -214,7 +218,7 @@ const ProductDetail = () => {
       >
         <div className="flex items-center justify-between gap-4 max-w-lg mx-auto">
           <div>
-            <p className="text-[10px] font-sans tracking-widest uppercase text-muted-foreground">Total</p>
+            <p className="text-[10px] font-sans tracking-widest uppercase text-muted-foreground">{t('product.total')}</p>
             <p className="font-serif text-xl">{formatPrice(product.price * Math.min(qty, maxAdd || 1))}</p>
           </div>
           <button
@@ -224,7 +228,7 @@ const ProductDetail = () => {
             className="flex-1 py-4 rounded-2xl bg-foreground text-background font-sans text-xs tracking-[0.2em] uppercase flex items-center justify-center gap-2 disabled:opacity-40"
           >
             <ShoppingBag size={18} />
-            Add to Bag
+            {t('product.addToBag')}
           </button>
         </div>
       </motion.div>

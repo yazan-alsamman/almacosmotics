@@ -4,15 +4,16 @@ import { motion } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
 import Footer from '@/components/Footer';
 import { useCatalogStore } from '@/store/catalogStore';
-
-const categories = [
-  { key: 'all', label: 'All' },
-  { key: 'makeup', label: 'Makeup' },
-  { key: 'skincare', label: 'Skincare' },
-  { key: 'fragrance', label: 'Fragrance' },
-];
+import { useLanguage } from '@/i18n/LanguageContext';
 
 const Products = () => {
+  const { t } = useLanguage();
+  const categories = [
+    { key: 'all', label: t('productsPage.catAll') },
+    { key: 'makeup', label: t('nav.makeup') },
+    { key: 'skincare', label: t('nav.skincare') },
+    { key: 'fragrance', label: t('nav.fragrance') },
+  ];
   const catalog = useCatalogStore((s) => s.products);
   const [searchParams] = useSearchParams();
   const initialCat = searchParams.get('cat') || 'all';
@@ -31,8 +32,8 @@ const Products = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="font-serif text-4xl md:text-5xl">Collection</h1>
-          <p className="text-muted-foreground font-sans mt-3 text-sm">Luxury beauty essentials</p>
+          <h1 className="font-serif text-4xl md:text-5xl">{t('productsPage.title')}</h1>
+          <p className="text-muted-foreground font-sans mt-3 text-sm">{t('productsPage.subtitle')}</p>
         </motion.div>
 
         <div className="flex justify-center gap-2 mb-12">
