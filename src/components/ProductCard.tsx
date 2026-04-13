@@ -4,16 +4,17 @@ import { formatPrice } from '@/data/products';
 import { useCartStore } from '@/store/cartStore';
 import { useStockStore } from '@/store/stockStore';
 import { ShoppingBag, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
   product: Product;
   index: number;
-  onOpenDetail?: (product: Product) => void;
 }
 
-const ProductCard = ({ product, index, onOpenDetail }: ProductCardProps) => {
+const ProductCard = ({ product, index }: ProductCardProps) => {
   const addItem = useCartStore((s) => s.addItem);
   const stock = useStockStore((s) => s.getStock(product.id));
+  const navigate = useNavigate();
 
   return (
     <motion.div
@@ -22,7 +23,15 @@ const ProductCard = ({ product, index, onOpenDetail }: ProductCardProps) => {
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       className="group cursor-pointer"
-      onClick={() => onOpenDetail?.(product)}
+      onClick={() => navigate(`/product/${product.id}`)}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          navigate(`/product/${product.id}`);
+        }
+      }}
     >
       <div className="relative overflow-hidden rounded-2xl bg-card/50 backdrop-blur-sm border border-border/30 aspect-[3/4] mb-4">
         <motion.img
@@ -42,7 +51,6 @@ const ProductCard = ({ product, index, onOpenDetail }: ProductCardProps) => {
             New
           </span>
         )}
-        {/* Stock urgency badge */}
         {stock <= 5 && stock > 0 && (
           <motion.span
             animate={{ scale: [1, 1.05, 1] }}
@@ -53,6 +61,7 @@ const ProductCard = ({ product, index, onOpenDetail }: ProductCardProps) => {
           </motion.span>
         )}
         <motion.button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             if (stock > 0) addItem(product);
@@ -61,8 +70,8 @@ const ProductCard = ({ product, index, onOpenDetail }: ProductCardProps) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 relative overflow-hidden"
+          aria-label="Add to bag"
         >
-          {/* Shimmer */}
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-background/20 to-transparent" />
           <ShoppingBag size={16} />
         </motion.button>

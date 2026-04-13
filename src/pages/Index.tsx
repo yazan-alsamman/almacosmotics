@@ -1,22 +1,17 @@
 import HeroSection from '@/components/HeroSection';
 import ProductCard from '@/components/ProductCard';
-import ProductModal from '@/components/ProductModal';
 import Footer from '@/components/Footer';
 import { products } from '@/data/products';
-import { Product } from '@/types';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
 
 const Index = () => {
   const featured = products.filter((p) => p.tags?.includes('bestseller'));
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (
     <div className="min-h-screen">
       <HeroSection />
 
-      {/* Featured Products */}
       <section className="container mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -30,7 +25,7 @@ const Index = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
           {featured.map((product, i) => (
-            <ProductCard key={product.id} product={product} index={i} onOpenDetail={setSelectedProduct} />
+            <ProductCard key={product.id} product={product} index={i} />
           ))}
         </div>
 
@@ -49,7 +44,6 @@ const Index = () => {
         </motion.div>
       </section>
 
-      {/* Brand story section */}
       <section className="bg-card/50 backdrop-blur-sm py-20">
         <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -93,7 +87,6 @@ const Index = () => {
         </div>
       </section>
 
-      <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       <Footer />
     </div>
   );

@@ -3,8 +3,13 @@ export interface Product {
   name: string;
   nameAr?: string;
   description: string;
-  price: number;
+  howToUse: string;
+  ingredients: string;
+  /** Primary hero image */
   image: string;
+  /** Extra images for gallery (may include primary) */
+  gallery: string[];
+  price: number;
   category: 'makeup' | 'skincare' | 'fragrance';
   rating: number;
   inStock: boolean;
@@ -51,4 +56,9 @@ export interface User {
   name: string;
   phone: string;
   isVerified: boolean;
+}
+
+export interface LatLng {
+  lat: number;
+  lng: number;
 }

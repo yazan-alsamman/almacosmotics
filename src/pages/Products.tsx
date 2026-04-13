@@ -2,10 +2,8 @@ import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
-import ProductModal from '@/components/ProductModal';
 import Footer from '@/components/Footer';
 import { products } from '@/data/products';
-import { Product } from '@/types';
 
 const categories = [
   { key: 'all', label: 'All' },
@@ -18,7 +16,6 @@ const Products = () => {
   const [searchParams] = useSearchParams();
   const initialCat = searchParams.get('cat') || 'all';
   const [activeCategory, setActiveCategory] = useState(initialCat);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const filtered = useMemo(
     () => (activeCategory === 'all' ? products : products.filter((p) => p.category === activeCategory)),
@@ -37,11 +34,11 @@ const Products = () => {
           <p className="text-muted-foreground font-sans mt-3 text-sm">Luxury beauty essentials</p>
         </motion.div>
 
-        {/* Filters */}
         <div className="flex justify-center gap-2 mb-12">
           {categories.map((cat) => (
             <button
               key={cat.key}
+              type="button"
               onClick={() => setActiveCategory(cat.key)}
               className={`px-5 py-2 rounded-full text-xs font-sans tracking-widest uppercase transition-all border ${
                 activeCategory === cat.key
@@ -54,15 +51,13 @@ const Products = () => {
           ))}
         </div>
 
-        {/* Product Grid */}
         <motion.div layout className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
           {filtered.map((product, i) => (
-            <ProductCard key={product.id} product={product} index={i} onOpenDetail={setSelectedProduct} />
+            <ProductCard key={product.id} product={product} index={i} />
           ))}
         </motion.div>
       </div>
 
-      <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       <Footer />
     </div>
   );
