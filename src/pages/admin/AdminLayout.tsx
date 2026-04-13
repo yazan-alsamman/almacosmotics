@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { useAdminStore } from '@/store/adminStore';
-import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -9,8 +9,9 @@ import {
   ShoppingBag,
   Users,
   ExternalLink,
-  Sparkles,
+  LogOut,
 } from 'lucide-react';
+import { useAdminAuthStore } from '@/store/adminAuthStore';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { useLanguage } from '@/i18n/LanguageContext';
 
@@ -21,8 +22,12 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
       : 'text-white/70 hover:bg-white/10 hover:text-white'
   }`;
 
+const LOGO_SRC = `${import.meta.env.BASE_URL}alma-admin-logo.png`;
+
 const AdminLayout = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const logout = useAdminAuthStore((s) => s.logout);
   const location = useLocation();
   const orders = useAdminStore((s) => s.orders);
   const prevOrderCount = useRef<number | null>(null);
@@ -48,16 +53,18 @@ const AdminLayout = () => {
         initial={{ x: -24, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="hidden md:flex w-64 flex-col border-e border-white/10 bg-gradient-to-b from-[hsl(348,42%,18%)]/95 to-[hsl(348,45%,12%)]/98 backdrop-blur-2xl text-white shadow-2xl"
+        className="hidden md:flex w-64 flex-col border-e border-white/10 bg-[hsl(348,36%,22%)] text-white shadow-lg"
       >
         <div className="p-6 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-200/90 to-amber-600/50 flex items-center justify-center shadow-lg">
-              <Sparkles className="w-5 h-5 text-[hsl(348,45%,22%)]" />
-            </div>
+          <div className="flex items-center gap-3">
+            <img
+              src={LOGO_SRC}
+              alt=""
+              className="w-12 h-12 object-contain rounded-full ring-1 ring-white/20 shrink-0"
+            />
             <div>
-              <p className="font-serif text-lg tracking-wide text-amber-50">{t('admin.brand')}</p>
-              <p className="text-[10px] font-sans tracking-[0.2em] uppercase text-white/50">{t('admin.suite')}</p>
+              <p className="font-serif text-lg tracking-wide text-amber-50/95">{t('admin.brand')}</p>
+              <p className="text-[10px] font-sans tracking-[0.2em] uppercase text-white/55">{t('admin.suite')}</p>
             </div>
           </div>
         </div>
@@ -82,6 +89,17 @@ const AdminLayout = () => {
         </nav>
 
         <div className="p-4 border-t border-white/10 space-y-3">
+          <button
+            type="button"
+            onClick={() => {
+              logout();
+              navigate('/admin/login', { replace: true });
+            }}
+            className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-sans tracking-widest uppercase text-white/85 hover:bg-white/10 transition-colors"
+          >
+            <LogOut size={14} />
+            {t('admin.signOut')}
+          </button>
           <Link
             to="/"
             className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-sans tracking-widest uppercase text-white/80 hover:bg-white/10 transition-colors"
@@ -95,7 +113,10 @@ const AdminLayout = () => {
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-40 border-b border-border/40 bg-background/70 backdrop-blur-xl px-4 md:px-8 py-3 md:py-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="md:hidden font-serif text-lg text-foreground">{t('admin.suite')}</div>
+            <div className="md:hidden flex items-center gap-2 min-w-0">
+              <img src={LOGO_SRC} alt="" className="w-9 h-9 object-contain rounded-full ring-1 ring-border/50 shrink-0" />
+              <span className="font-serif text-lg text-foreground truncate">{t('admin.suite')}</span>
+            </div>
             <div className="ms-auto flex items-center gap-3">
               <LanguageToggle />
             </div>

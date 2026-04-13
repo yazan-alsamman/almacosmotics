@@ -14,6 +14,8 @@ import Auth from "./pages/Auth";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import AdminLayout from "./pages/admin/AdminLayout";
+import AdminLogin from "./pages/admin/AdminLogin";
+import { RequireAdminAuth } from "./pages/admin/RequireAdminAuth";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminProductForm from "./pages/admin/AdminProductForm";
@@ -28,7 +30,8 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         {/* Admin first: pathless layout was incorrectly wrapping /admin with an empty storefront outlet */}
-        <Route path="admin" element={<AdminLayout />}>
+        <Route path="admin/login" element={<AdminLogin />} />
+        <Route path="admin" element={<RequireAdminAuth><AdminLayout /></RequireAdminAuth>}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="products" element={<AdminProducts />} />

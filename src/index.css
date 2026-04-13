@@ -114,9 +114,7 @@
 }
 
 .admin-surface {
-  background:
-    radial-gradient(ellipse 90% 60% at 50% -15%, hsl(350 55% 92% / 0.65), transparent 55%),
-    linear-gradient(180deg, hsl(40 33% 97%) 0%, hsl(350 28% 94%) 100%);
+  background: linear-gradient(180deg, hsl(40 28% 98%) 0%, hsl(350 18% 96%) 100%);
 }
 
 @keyframes pulse-ring {
