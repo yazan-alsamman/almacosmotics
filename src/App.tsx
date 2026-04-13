@@ -1,9 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AnimatePresence } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { StorefrontLayout } from "@/layouts/StorefrontLayout";
 import PageTransition from "./components/PageTransition";
@@ -25,10 +24,8 @@ import AdminUsers from "./pages/admin/AdminUsers";
 const queryClient = new QueryClient();
 
 const AnimatedRoutes = () => {
-  const location = useLocation();
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+    <Routes>
         {/* Admin first: pathless layout was incorrectly wrapping /admin with an empty storefront outlet */}
         <Route path="admin/login" element={<AdminLogin />} />
         <Route path="admin" element={<RequireAdminAuth><AdminLayout /></RequireAdminAuth>}>
@@ -52,7 +49,6 @@ const AnimatedRoutes = () => {
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
-    </AnimatePresence>
   );
 };
 

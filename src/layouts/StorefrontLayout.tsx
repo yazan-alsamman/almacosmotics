@@ -9,7 +9,10 @@ export function StorefrontLayout() {
       <FloatingParticles />
       <Navbar />
       <CartDrawer />
-      <Outlet />
+      {/* z-10 keeps page content above decorative layer; links remain clickable */}
+      <div className="relative z-10 min-h-[calc(100vh-4rem)]">
+        <Outlet />
+      </div>
     </>
   );
 }

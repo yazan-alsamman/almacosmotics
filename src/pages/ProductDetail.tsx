@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Minus, Plus, ShoppingBag, Star } from 'lucide-react';
 import { formatPrice } from '@/data/products';
@@ -18,7 +18,6 @@ import {
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const { t, locale } = useLanguage();
   const product = useCatalogStore((s) => (id ? s.products.find((p) => p.id === id) : undefined));
   const displayName = product ? productDisplayName(product, locale) : '';
@@ -56,15 +55,15 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen pt-20 md:pt-24 pb-32 md:pb-16">
       <div className="container mx-auto px-4 max-w-6xl">
-        <motion.button
-          initial={{ opacity: 0, x: -8 }}
-          animate={{ opacity: 1, x: 0 }}
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-xs font-sans tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors mb-8"
-        >
-          <ArrowLeft size={14} />
-          {t('product.back')}
-        </motion.button>
+        <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}>
+          <Link
+            to="/products"
+            className="inline-flex items-center gap-2 text-xs font-sans tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors mb-8"
+          >
+            <ArrowLeft size={14} />
+            {t('product.back')}
+          </Link>
+        </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* Gallery */}
