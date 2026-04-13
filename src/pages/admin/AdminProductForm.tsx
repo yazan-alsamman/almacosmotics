@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type DragEvent } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { useCatalogStore } from '@/store/catalogStore';
 import { useStockStore } from '@/store/stockStore';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Product } from '@/types';
+import { compressImageFile } from '@/lib/compressImage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ImagePlus, Upload, X } from 'lucide-react';
 
 const emptyForm = (): Omit<Product, 'id'> => ({
   name: '',
@@ -49,9 +51,13 @@ const AdminProductForm = () => {
 
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<Omit<Product, 'id'>>(emptyForm);
-  const [galleryText, setGalleryText] = useState('');
+  /** Gallery URLs excluding the primary `form.image` (extras only). */
+  const [extraGallery, setExtraGallery] = useState<string[]>([]);
   const [tagsText, setTagsText] = useState('');
   const [stockQty, setStockQty] = useState(10);
+  const [mediaBusy, setMediaBusy] = useState(false);
+  const primaryFileRef = useRef<HTMLInputElement>(null);
+  const galleryFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isEdit || !id) return;
@@ -74,7 +80,7 @@ const AdminProductForm = () => {
       inStock: p.inStock,
       tags: p.tags ?? [],
     });
-    setGalleryText(p.gallery.join('\n'));
+    setExtraGallery(p.gallery.filter((url) => url !== p.image));
     setTagsText((p.tags ?? []).join(', '));
     setStockQty(useStockStore.getState().getStock(id));
   }, [isEdit, id, products, navigate]);
@@ -83,18 +89,56 @@ const AdminProductForm = () => {
     setForm((f) => ({ ...f, [key]: v }));
   };
 
+  const mergeGallery = () => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const u of [form.image, ...extraGallery]) {
+      if (u && !seen.has(u)) {
+        seen.add(u);
+        out.push(u);
+      }
+    }
+    return out;
+  };
+
+  const handlePrimaryFiles = async (files: FileList | null) => {
+    const file = files?.[0];
+    if (!file) return;
+    setMediaBusy(true);
+    try {
+      const url = await compressImageFile(file);
+      setField('image', url);
+    } catch (e) {
+      toast.error('Could not use this image', { description: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setMediaBusy(false);
+    }
+  };
+
+  const handleGalleryFiles = async (files: FileList | null) => {
+    if (!files?.length) return;
+    const list = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    if (!list.length) return;
+    setMediaBusy(true);
+    try {
+      const urls = await Promise.all(list.map((f) => compressImageFile(f)));
+      setExtraGallery((g) => [...g, ...urls]);
+    } catch (e) {
+      toast.error('Could not add images', { description: e instanceof Error ? e.message : String(e) });
+    } finally {
+      setMediaBusy(false);
+    }
+  };
+
   const handleSubmit = () => {
-    const gallery = galleryText
-      .split('\n')
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const gallery = mergeGallery();
     const tags = tagsText
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean);
     const payload = {
       ...form,
-      gallery: gallery.length ? gallery : form.image ? [form.image] : [],
+      gallery: gallery.length ? gallery : [],
       image: form.image || gallery[0] || '',
       tags,
     };
@@ -203,25 +247,114 @@ const AdminProductForm = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-4"
+              className="space-y-6"
             >
+              <input
+                ref={primaryFileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={mediaBusy}
+                onChange={(e) => {
+                  void handlePrimaryFiles(e.target.files);
+                  e.target.value = '';
+                }}
+              />
+              <input
+                ref={galleryFileRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                disabled={mediaBusy}
+                onChange={(e) => {
+                  void handleGalleryFiles(e.target.files);
+                  e.target.value = '';
+                }}
+              />
+
               <div>
                 <label className="text-xs uppercase tracking-widest text-muted-foreground">{t('admin.heroImage')}</label>
-                <Input
-                  className="mt-1 rounded-xl font-mono text-sm"
-                  value={form.image}
-                  onChange={(e) => setField('image', e.target.value)}
-                  placeholder="https://"
-                />
+                <button
+                  type="button"
+                  disabled={mediaBusy}
+                  onClick={() => primaryFileRef.current?.click()}
+                  onDragOver={(e: DragEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onDrop={(e: DragEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    void handlePrimaryFiles(e.dataTransfer.files);
+                  }}
+                  className="mt-2 flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border/80 bg-muted/20 px-4 py-10 text-center transition-colors hover:border-foreground/30 hover:bg-muted/30 disabled:opacity-60"
+                >
+                  <Upload className="h-10 w-10 text-muted-foreground" aria-hidden />
+                  <span className="text-sm font-sans text-foreground">{t('admin.uploadDropHint')}</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">JPEG · PNG · WebP</span>
+                </button>
+                {form.image && (
+                  <div className="relative mt-4 inline-block max-w-full">
+                    <img
+                      src={form.image}
+                      alt=""
+                      className="max-h-48 w-auto max-w-full rounded-xl border border-border/50 object-contain shadow-sm"
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute -end-2 -top-2 h-8 w-8 rounded-full shadow-md"
+                      onClick={() => setField('image', '')}
+                      aria-label={t('admin.removePhoto')}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
+
               <div>
                 <label className="text-xs uppercase tracking-widest text-muted-foreground">{t('admin.addImages')}</label>
-                <Textarea
-                  className="mt-1 rounded-xl min-h-[140px] font-mono text-sm"
-                  value={galleryText}
-                  onChange={(e) => setGalleryText(e.target.value)}
-                  placeholder="https://..."
-                />
+                <p className="mt-1 text-xs text-muted-foreground">{t('admin.uploadGalleryHint')}</p>
+                <button
+                  type="button"
+                  disabled={mediaBusy}
+                  onClick={() => galleryFileRef.current?.click()}
+                  onDragOver={(e: DragEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onDrop={(e: DragEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    void handleGalleryFiles(e.dataTransfer.files);
+                  }}
+                  className="mt-2 flex w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border/60 bg-muted/10 px-4 py-8 text-center transition-colors hover:border-foreground/25 hover:bg-muted/25 disabled:opacity-60"
+                >
+                  <ImagePlus className="h-8 w-8 text-muted-foreground" aria-hidden />
+                  <span className="text-sm font-sans text-muted-foreground">{t('admin.uploadDropHint')}</span>
+                </button>
+                {extraGallery.length > 0 && (
+                  <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {extraGallery.map((src, i) => (
+                      <li key={i} className="relative aspect-square overflow-hidden rounded-xl border border-border/50 bg-muted/20">
+                        <img src={src} alt="" className="h-full w-full object-cover" />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="secondary"
+                          className="absolute end-1 top-1 h-7 w-7 rounded-full shadow-md"
+                          onClick={() => setExtraGallery((g) => g.filter((_, j) => j !== i))}
+                          aria-label={t('admin.removePhoto')}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </motion.div>
           )}
