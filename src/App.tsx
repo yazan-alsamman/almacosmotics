@@ -27,14 +27,7 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route element={<StorefrontLayout />}>
-          <Route index element={<PageTransition><Index /></PageTransition>} />
-          <Route path="products" element={<PageTransition><Products /></PageTransition>} />
-          <Route path="product/:id" element={<PageTransition><ProductDetail /></PageTransition>} />
-          <Route path="auth" element={<PageTransition><Auth /></PageTransition>} />
-          <Route path="checkout" element={<PageTransition><Checkout /></PageTransition>} />
-        </Route>
-
+        {/* Admin first: pathless layout was incorrectly wrapping /admin with an empty storefront outlet */}
         <Route path="admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
@@ -43,6 +36,15 @@ const AnimatedRoutes = () => {
           <Route path="products/:id/edit" element={<AdminProductForm />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="users" element={<AdminUsers />} />
+        </Route>
+
+        {/* Absolute paths so /admin is never matched by the storefront layout */}
+        <Route element={<StorefrontLayout />}>
+          <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+          <Route path="/products" element={<PageTransition><Products /></PageTransition>} />
+          <Route path="/product/:id" element={<PageTransition><ProductDetail /></PageTransition>} />
+          <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
+          <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
         </Route>
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
